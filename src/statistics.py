@@ -2,11 +2,6 @@
 from helper import *
 import pandas as pd
 
-root_path = rf'C:/Users/gzq-712/Desktop/Git/SAWI'
-data_path = f'{root_path}/data'
-# Total 9 projects
-PROJECT = ['ant', 'cass', 'commons', 'derby', 'jmeter', 'lucence', 'mvn', 'phoenix', 'tomcat']
-
 
 def data_summary():
     for project in PROJECT:
@@ -44,8 +39,8 @@ def export_golden_dataset():
     F15  -> 84 : method visibility \n
 
     Category 5 -- Warning characteristic \n
-    F20  -> 89 : warning pattern \n
-    F21  -> 90 : warning type \n
+    F20  -> 89 : warning pattern xxx \n
+    F21  -> 90 : warning type xxx \n
     F22  -> 91 : warning priority \n
     F94  -> 96 : warnings in package, number of warnings in package \n
 

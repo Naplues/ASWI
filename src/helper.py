@@ -1,6 +1,12 @@
 # -*- coding: utf-8 -*-
 import os
 
+root_path = rf'C:/Users/gzq-712/Desktop/Git/SAWI'
+data_path = f'{root_path}/data'
+
+# Total 9 projects
+PROJECT = ['ant', 'cass', 'commons', 'derby', 'jmeter', 'lucence', 'mvn', 'phoenix', 'tomcat']
+
 
 def make_path(path):
     if not os.path.exists(path):

@@ -1,6 +1,8 @@
 # -*-coding:utf-8 -*-
 
 import numpy as np
+from sklearn.linear_model import LogisticRegression
+
 from helper import *
 import warnings
 import pandas as pd
@@ -15,13 +17,15 @@ __author__ = 'Naples'
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 np.random.seed(0)
 
-CLASSIFIERS = [RandomForestClassifier(),
-               DecisionTreeClassifier(),
-               svm.SVC(kernel="linear", probability=True)]
+CLASSIFIERS = [
+    LogisticRegression(),
+    RandomForestClassifier(),
+    DecisionTreeClassifier(),
+    svm.SVC(kernel="linear", probability=True)]
 
 # F71, F3, F15 多值类特征
 # F20, F21 名词类特征
-golden_features = ["F116", "F115", "F117", "F120", "F123", "F110", "F105", "F68", "F101", "F104", "F65", "F22",
+golden_features = ["F116", "F115", "F117", "F110", "F123", "F120", "F105", "F68", "F101", "F104", "F65", "F22",
                    "F94", "F71-", "F72", "F25", "F3-", "F15-", "F126", "F41", "F77", 'category']
 
 
@@ -84,13 +88,14 @@ def data_preparing_WP(project):
 def build_WP_model(project, clf):
     x_train, y_train, x_test, y_test = data_preparing_WP(project)
     clf.fit(x_train, y_train)
-    y_label = clf.predict(x_test)
+    y_pred = clf.predict(x_test)
     y_score = clf.predict_proba(x_test)
     # Evaluation
-    recall = recall_score(y_test, y_label, pos_label='close')
+    precision = precision_score(y_test, y_pred, pos_label='close')
+    recall = recall_score(y_test, y_pred, pos_label='close')
+    f1 = f1_score(y_test, y_pred, pos_label='close')
     auc = roc_auc_score(y_test, y_score[:, 1])
-    print(round(recall, 3), round(auc, 3), end="\t")
-    print(f"- {project}")
+    print(f'{round(precision, 3)},{round(recall, 3)},{round(f1, 3)},{project}')
 
 
 def runWP():

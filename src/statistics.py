@@ -4,6 +4,10 @@ import pandas as pd
 
 
 def data_summary():
+    """
+    数据集统计信息
+    :return:
+    """
     for project in PROJECT:
         path = f'{data_path}/{project}/features/totalFeatures4.csv'
         data = pd.read_csv(path)
@@ -85,9 +89,31 @@ def export_golden_dataset():
             print(f'{project}-{x}: {len(df.columns)}')
 
 
+# 相邻版本的数据是十分相似的
+# 如果数据本身相似，是否有必要进行预测
+def get_warning_set(path):
+    warning_set = set()
+    data = read_data_from_file(path)
+    for line in data:
+        ss = line.split(',', maxsplit=5)
+        warning_set.add(line.replace(ss[4], ''))
+    return warning_set
+
+
+def measure_consecutive_data():
+    for project in PROJECT:
+        for x in range(1, 5):
+            w_set_1 = get_warning_set(f'{data_path}/{project}/warnings/warningInfo{x}.csv')
+            w_set_2 = get_warning_set(f'{data_path}/{project}/warnings/warningInfo{x + 1}.csv')
+            intersection = w_set_1.intersection(w_set_2)
+            print(f'{project}: [v{x}->v{x + 1}] {len(w_set_1)} ∩ {len(w_set_2)} => {len(intersection)}')
+    pass
+
+
 def main():
     # data_summary()
-    export_golden_dataset()
+    # export_golden_dataset()
+    measure_consecutive_data()
     pass
 
 

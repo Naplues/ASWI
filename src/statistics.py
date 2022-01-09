@@ -101,12 +101,16 @@ def get_warning_set(path):
 
 
 def measure_consecutive_data():
+    print(f'Project, v1 & v2 => O12, Ratio, v2 & v3 => O23, Ratio, v3 & v4 => O34, Ratio, v4 & v5 => O45, Ratio')
     for project in PROJECT:
+        print(f'{project}', end=', ')
         for x in range(1, 5):
             w_set_1 = get_warning_set(f'{data_path}/{project}/warnings/warningInfo{x}.csv')
             w_set_2 = get_warning_set(f'{data_path}/{project}/warnings/warningInfo{x + 1}.csv')
             intersection = w_set_1.intersection(w_set_2)
-            print(f'{project}: [v{x}->v{x + 1}] {len(w_set_1)} ∩ {len(w_set_2)} => {len(intersection)}')
+            ratio = round(len(intersection) / len(w_set_2), 4)
+            print(f'{len(w_set_1)} & {len(w_set_2)} => {len(intersection)}, {ratio}', end=', ')
+        print()
     pass
 
 

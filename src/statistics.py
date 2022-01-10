@@ -19,14 +19,22 @@ def data_summary():
     :return:
     """
     for project in PROJECT:
-        path = f'{data_path}/{project}/features/totalFeatures4.csv'
-        data = pd.read_csv(path)
-        category = data['category']
-        num_close = len([i for i in category if i == 'close'])
-        num_open = len([i for i in category if i == 'open'])
-        num_total = len(category)
-        ratio_close = round(num_close / num_total, 3)
-        print(project, num_close, num_open, num_total, ratio_close)
+        stat_total, stat_close, stat_ratio = [], [], []
+        for x in range(1, 6):
+            path = f'{data_path}/{project}/features/totalFeatures{x}.csv'
+            data = pd.read_csv(path)
+            category = data['category']
+            num_close = len([i for i in category if i == 'close'])
+            num_open = len([i for i in category if i == 'open'])
+            num_total = len(category)
+            ratio_close = round(num_close / num_total, 3)
+            stat_total.append(num_total)
+            stat_close.append(num_close)
+            stat_ratio.append(ratio_close)
+            # print(project, num_total, num_close, num_open, ratio_close)
+        print(f'{project}, {min(stat_total)}-{max(stat_total)},'
+              f'{min(stat_close)}-{max(stat_close)},'
+              f'{round(min(stat_ratio) * 100, 1)}%-{round(max(stat_ratio) * 100, 1)}%')
     pass
 
 
@@ -34,7 +42,7 @@ def export_golden_dataset():
     """
     Category 1 -- File history \n
     F25  -> 15 : file age, number of days the file has existed \n
-    F72  -> 16 : file creation \n
+    F72  -> 16 : file creation revision \n
     F71  -> 18 : developers, set of developers who have made changes to the file \n
 
     Category 2 -- Code Characteristic \n

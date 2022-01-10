@@ -9,8 +9,17 @@ golden_feature_names = ['F25', 'F72',  # 'F71',
                         # 'F3', 'F15',
                         'F20', 'F21', 'F22', 'F94',
                         'F77',
-                        'F110', 'F116',
-                        'F115', 'F117', 'F120', 'F123', 'category']
+                        'F110', 'F116', 'F115', 'F117', 'F120', 'F123', 'category']
+
+feature_map = {'F25': 'ND', 'F72': 'FCR', 'F71': 'SD',
+               'F104': 'RCC', 'F105': 'DWM', 'F101': 'DWF', 'F65': 'NM', 'F68': 'NC',
+               'F126': 'PLAR', 'F41': 'PLAM',
+               'F3': 'PS', 'F15': 'MV',
+               'F20': 'WP', 'F21': 'WT', 'F22': 'WR', 'F94': 'NWP',
+               'F77': 'NR',
+               'F110': 'DWT', 'F116': 'DM',
+               'F115': 'DF', 'F117': 'DLP', 'F120': 'DDL', 'F123': 'ALT',
+               'category': 'category'}
 
 
 def data_summary():
@@ -41,9 +50,9 @@ def data_summary():
 def export_golden_dataset():
     """
     Category 1 -- File history \n
-    F25  -> 15 : file age, number of days the file has existed \n
-    F72  -> 16 : file creation revision \n
-    F71  -> 18 : developers, set of developers who have made changes to the file \n
+    F25  -> 15 : ND file age, number of days the file has existed \n
+    F72  -> 16 : FCR file creation revision \n
+    F71  -> 18 : SD developers, set of developers who have made changes to the file \n
 
     Category 2 -- Code Characteristic \n
     F104 -> 23 : comment-code ratio, ratio of comment length and code length in file \n
@@ -84,8 +93,7 @@ def export_golden_dataset():
                             'F3', 'F15',
                             'F20', 'F21', 'F22', 'F94',
                             'F77',
-                            'F110', 'F116',
-                            'F115', 'F117', 'F120', 'F123', 'category']
+                            'F110', 'F116', 'F115', 'F117', 'F120', 'F123', 'category']
     for project in PROJECT:
         make_path(f'{data_path}/{project}/golden/')
         for x in range(1, 6):
@@ -135,7 +143,7 @@ def measure_consecutive_data():
 def measure_consecutive_feature():
     print(f'Project, v1 & v2 => O12, Ratio, v2 & v3 => O23, Ratio, v3 & v4 => O34, Ratio, v4 & v5 => O45, Ratio')
     for feature in golden_feature_names:
-        print(f'========== {feature} ==========')
+        print(f'========== {feature_map[feature]} ==========')
         for project in PROJECT:
             print(f'{project}', end='\t')
             for x in range(1, 5):
@@ -165,7 +173,7 @@ def measure_consecutive_feature():
                     if f1 == f2:
                         overlap += 1
                 ratio = round(overlap / len(intersection), 4)
-                print(f'{overlap} / {len(intersection)} => {ratio}', end=', ')
+                print(f'{overlap} / {len(intersection)} =>, {round(ratio * 100, 2)}%', end=', ')
             print()
             # break
     pass

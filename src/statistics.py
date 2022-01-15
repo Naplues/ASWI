@@ -2,24 +2,45 @@
 from helper import *
 import pandas as pd
 
-# F71, F3, F15
-golden_feature_names = ['F25', 'F72',  # 'F71',
-                        'F104', 'F105', 'F101', 'F65', 'F68',
-                        'F126', 'F41',
-                        # 'F3', 'F15',
-                        'F20', 'F21', 'F22', 'F94',
-                        'F77',
-                        'F110', 'F116', 'F115', 'F117', 'F120', 'F123', 'category']
+"""
+(3) File history
+F25  -> 15 : ND  : Int // file age, number of days the file has existed
+F72  -> 16 : FCR : Int // file creation number of revision since file creation
+F71  -> 18 : SD  : Set // XXX developers, set of developers who have made changes to the file
 
-feature_map = {'F25': 'ND', 'F72': 'FCR', 'F71': 'SD',
-               'F104': 'RCC', 'F105': 'DWM', 'F101': 'DWF', 'F65': 'NM', 'F68': 'NC',
-               'F126': 'PLAR', 'F41': 'PLAM',
-               'F3': 'PS', 'F15': 'MV',
-               'F20': 'WP', 'F21': 'WT', 'F22': 'WR', 'F94': 'NWP',
-               'F77': 'NR',
-               'F110': 'DWT', 'F116': 'DM',
-               'F115': 'DF', 'F117': 'DLP', 'F120': 'DDL', 'F123': 'ALT',
-               'category': 'category'}
+(5) Code Characteristic
+F104 -> 23 : RCC : Float // comment-code ratio, ratio of comment length and code length in file
+F105 -> 24 : DWM : Float // method depth, depth of warned line in method
+F101 -> 25 : DWF : Float // file depth, depth of warned line in file
+F65  -> 28 : NM  : Int   // methods in file, number of methods in file
+F68  -> 31 : NC  : Int   // class in package, number of (inner) class in package
+
+(2) Code history
+F126 -> 40 : LAR : Int // Lines of code added in file during the past 25 revisions
+F41  -> 46 : LAM : Int // Lines of code added in package during the past 3 months
+
+(2) Code analysis
+F3   -> 72 :  PS : Nominal // XXX parameter signature
+F15  -> 84 :  MV : Nominal // XXX method visibility
+
+(4) Warning characteristic
+F20  -> 89 : WP  : Nominal // XXX warning pattern
+F21  -> 90 : WT  : Nominal // XXX warning type
+F22  -> 91 : WR  : Int     // warning priority
+F94  -> 96 : NWP : Int     // warnings in package, number of warnings in package
+
+(1) Warning history
+F77  -> 99 : NR  : Int // warning lifetime by revision, number of revisions between current revision and open revision
+
+(6) Warning combination
+F110 -> 106 : DWT : Float // warning context for warning type, difference of actionable and unactionable warnings for a warning type normalized by S
+F116 -> 107 : DM  : Float // warning context in method, difference of actionable and unactionable warnings for the method normalized by S
+F115 -> 108 : DF  : Float // warning context in file, difference of actionable and unactionable warnings for the file normalized by S
+F117 -> 112 : DLP : Float // defect likelihood for warning pattern
+F120 -> 115 : DDL : Float  //  discretization of defect likelihood
+F123 -> 116 : ALT : Float // average lifetime for warning type, average value for feature F100 for a warning type
+    
+"""
 
 
 def data_summary():
@@ -47,59 +68,14 @@ def data_summary():
     pass
 
 
-def export_golden_dataset():
-    """
-    Category 1 -- File history \n
-    F25  -> 15 : ND file age, number of days the file has existed \n
-    F72  -> 16 : FCR file creation revision \n
-    F71  -> 18 : SD developers, set of developers who have made changes to the file \n
-
-    Category 2 -- Code Characteristic \n
-    F104 -> 23 : comment-code ratio, ratio of comment length and code length in file \n
-    F105 -> 24 : method depth, depth of warned line in method \n
-    F101 -> 25 : file depth, depth of warned line in file \n
-    F65  -> 28 : methods in file, number of methods in file \n
-    F68  -> 31 : class in package, number of (inner) class in package \n
-
-    Category 3 -- Code history \n
-    F126 -> 40 : added percentage of lines of code in file during the past 25 revisions \n
-    F41  -> 46 : added percentage of lines of code in package during the past 3 months \n
-
-    Category 4 -- Code analysis \n
-    F3   -> 72 : parameter signature, \n
-    F15  -> 84 : method visibility \n
-
-    Category 5 -- Warning characteristic \n
-    F20  -> 89 : warning pattern xxx \n
-    F21  -> 90 : warning type xxx \n
-    F22  -> 91 : warning priority \n
-    F94  -> 96 : warnings in package, number of warnings in package \n
-
-    Category 6 -- Warning history \n
-    F77  -> 99 : warning lifetime by revision, number of revisions between current revision and open revision \n
-
-    Category 7 -- Warning combination \n
-    F110 -> 106 : warning context for warning type, difference of actionable and unactionable warnings for a warning type normalized by S \n
-    F116 -> 107 : warning context in method, difference of actionable and unactionable warnings for the method normalized by S \n
-    F115 -> 108 : warning context in file, difference of actionable and unactionable warnings for the file normalized by S \n
-    F117 -> 112 : defect likelihood for warning pattern \n
-    F120 -> 115 : discretization of defect likelihood \n
-    F123 -> 116 : average lifetime for warning type, average value for feature F100 for a warning type \n
-    :return:
-    """
-    golden_feature_names = ['F25', 'F72', 'F71',
-                            'F104', 'F105', 'F101', 'F65', 'F68',
-                            'F126', 'F41',
-                            'F3', 'F15',
-                            'F20', 'F21', 'F22', 'F94',
-                            'F77',
-                            'F110', 'F116', 'F115', 'F117', 'F120', 'F123', 'category']
+def export_golden_dataset(to_file=False):
     for project in PROJECT:
         make_path(f'{data_path}/{project}/golden/')
         for x in range(1, 6):
             total_path = f'{data_path}/{project}/features/totalFeatures{x}.csv'
             golden_path = f'{data_path}/{project}/golden/goldenFeatures{x}.csv'
             df = pd.read_csv(total_path)
+
             golden_features = []
             for feature in df.columns:
                 if feature in golden_feature_names:
@@ -109,7 +85,7 @@ def export_golden_dataset():
 
             df = df[golden_features]
 
-            df.to_csv(golden_path, index=False)
+            df.to_csv(golden_path, index=False) if to_file else None
             print(f'{project}-{x}: {len(df.columns)}')
 
 
@@ -181,9 +157,11 @@ def measure_consecutive_feature():
 
 def main():
     # data_summary()
-    # export_golden_dataset()
+
+    # 导出Golden Feature Set 数据集
+    export_golden_dataset(to_file=True)
     # measure_consecutive_data()
-    measure_consecutive_feature()
+    # measure_consecutive_feature()
     pass
 
 

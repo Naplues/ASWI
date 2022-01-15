@@ -7,7 +7,7 @@ from helper import *
 import warnings
 import pandas as pd
 from sklearn import preprocessing
-from sklearn.ensemble import RandomForestClassifier
+from sklearn.ensemble import RandomForestClassifier, AdaBoostClassifier
 from sklearn.tree import DecisionTreeClassifier
 from sklearn import svm
 from sklearn.metrics import *
@@ -21,17 +21,13 @@ CLASSIFIERS = [
     LogisticRegression(),
     RandomForestClassifier(),
     DecisionTreeClassifier(),
+    AdaBoostClassifier(),
     svm.SVC(kernel="linear", probability=True)]
 
-# F71, F3, F15 多值类特征
-# F20, F21 名词类特征
-golden_features = ["F116", "F115", "F117", "F110", "F123", "F120", "F105", "F68", "F101", "F104", "F65", "F22",
-                   "F94", "F71-", "F72", "F25", "F3-", "F15-", "F126", "F41", "F77", 'category']
 
-
-def open_file(train_project, test_project):
-    trainFile = rf"{data_path}/{train_project}/features/totalFeatures4.csv"
-    testFile = rf"{data_path}/{test_project}/features/totalFeatures5.csv"
+def open_file(train_project, test_project, release=4):
+    trainFile = rf"{data_path}/{train_project}/features/totalFeatures{release}.csv"
+    testFile = rf"{data_path}/{test_project}/features/totalFeatures{release + 1}.csv"
 
     train = pd.read_csv(trainFile, index_col=None, skiprows=0, low_memory=False)
     test = pd.read_csv(testFile, index_col=None, skiprows=0, low_memory=False)
@@ -42,8 +38,8 @@ def open_file(train_project, test_project):
 
 
 def get_common_feature_names(header_list):
-    train_golden = set([feature for feature in header_list[0] if feature.startswith(tuple(golden_features))])
-    test_golden = set([feature for feature in header_list[1] if feature.startswith(tuple(golden_features))])
+    train_golden = set([feature for feature in header_list[0] if feature.startswith(tuple(golden_feature_names))])
+    test_golden = set([feature for feature in header_list[1] if feature.startswith(tuple(golden_feature_names))])
 
     common_features = train_golden.intersection(test_golden)
     return common_features
@@ -54,7 +50,7 @@ def trim(df, common_features):
     return df.drop(set(df.columns.tolist()) - common_features, axis=1)
 
 
-def data_preparing_CP(train_project, test_project):
+def data_preparing(train_project, test_project):
     test, train, feature_list = open_file(train_project, test_project)
     common_features = get_common_feature_names(feature_list)
 
@@ -81,7 +77,7 @@ def data_preparing_CP(train_project, test_project):
 
 
 def data_preparing_WP(project):
-    return data_preparing_CP(project, project)
+    return data_preparing(project, project)
 
 
 #######################################  Within Project #################################################
@@ -95,19 +91,19 @@ def build_WP_model(project, clf):
     recall = recall_score(y_test, y_pred, pos_label='close')
     f1 = f1_score(y_test, y_pred, pos_label='close')
     auc = roc_auc_score(y_test, y_score[:, 1])
-    print(f'{round(precision, 3)},{round(recall, 3)},{round(f1, 3)},{project}')
+    print(f'{round(precision, 3)},{round(recall, 3)},{round(f1, 3)},{round(auc, 3)},{project}')
 
 
 def runWP():
     for clf in CLASSIFIERS:
-        print(f"-- {clf}")
+        print(f"===== {clf} =====")
         for project in PROJECT:
             build_WP_model(project, clf)
 
 
 #######################################  Cross Project #################################################
 def build_CP_model(train_project, test_project, clf):
-    x_train, y_train, x_test, y_test = data_preparing_CP(train_project, test_project)
+    x_train, y_train, x_test, y_test = data_preparing(train_project, test_project)
     clf.fit(x_train, y_train)
     y_label = clf.predict(x_test)
     y_score = clf.predict_proba(x_test)
@@ -116,7 +112,7 @@ def build_CP_model(train_project, test_project, clf):
     recall = recall_score(y_test, y_label, pos_label='close')
     f1 = f1_score(y_test, y_label, pos_label='close')
     auc = roc_auc_score(y_test, y_score[:, 1])
-    print(round(precision, 3), round(recall, 3), round(f1, 3), end="\t")
+    print(f'{round(precision, 3)},{round(recall, 3)},{round(f1, 3)},{round(auc, 3)},', end="\t")
     print(f"- {train_project} ==> {test_project}")
 
 

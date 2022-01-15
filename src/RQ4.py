@@ -66,7 +66,7 @@ def unsupervised(project, feature_name):
     recall = recall_score(y_test, y_pred, pos_label='close')
     f1 = f1_score(y_test, y_pred, pos_label='close')
     auc = roc_auc_score(y_test, y_score)
-    print(f'{round(precision, 3)},{round(recall, 3)},{round(f1, 3)},{project}')
+    print(f'{round(precision, 3)},{round(recall, 3)},{round(f1, 3)},{round(auc, 3)},{project}')
 
 
 def run():

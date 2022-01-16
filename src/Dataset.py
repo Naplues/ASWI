@@ -55,7 +55,6 @@ def data_summary():
             data = pd.read_csv(path)
             category = data['category']
             num_close = len([i for i in category if i == 'close'])
-            num_open = len([i for i in category if i == 'open'])
             num_total = len(category)
             ratio_close = round(num_close / num_total, 3)
             stat_total.append(num_total)

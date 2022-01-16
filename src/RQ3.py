@@ -1,18 +1,13 @@
 # -*- coding: utf-8 -*-
 import pandas as pd
 import numpy as np
+from scipy import stats
 
 from src.helper import *
 
+np.seterr(divide='ignore', invalid='ignore')
+
 CATEGORY = 'category'
-golden_feature_names = ['F25', 'F72',  # 'F71',
-                        'F104', 'F105', 'F101', 'F65', 'F68',
-                        'F126', 'F41',
-                        # 'F3', 'F15',
-                        'F22', 'F94',  # 'F20', 'F21',
-                        'F77',
-                        'F110', 'F116',
-                        'F115', 'F117', 'F120', 'F123']
 
 
 def binary_to_value(binary):
@@ -25,18 +20,21 @@ def binary_to_value(binary):
     return pd.Series(label)
 
 
-def feature_correlation(project, feature_name):
+def numerical_feature_correlation(project, feature_name, to_file=False):
     """
     RQ3
-    分析指定特征与标签的关系 F116
-    Pearson correlation coefficient 皮尔逊相关系数
-    :param project:
-    :param feature_name:
+    Analyzing the correlation between numerical features and warning category
+    Pearson correlation coefficient (PCC)
     :return:
     """
-    total_path = f'{data_path}/{project}/features/totalFeatures4.csv'
+    total_path = f'{data_path}/{project}/features/totalFeatures1.csv'
     df = pd.read_csv(total_path)
-    feature = df[feature_name]
+    # Remove category in list of feature name
+    f_name = feature_name.copy()
+    f_name.remove(CATEGORY)
+
+    feature = df[f_name]
+
     # 将标签表示为数字并且加入成为新的特征列
     feature.insert(len(feature.columns), 'category', binary_to_value(df[CATEGORY]))
     # 转置后的矩阵
@@ -44,7 +42,7 @@ def feature_correlation(project, feature_name):
     # 计算所有特征的相关系数
     pcc_value = np.corrcoef(feature)
     result = pd.DataFrame(pcc_value, index=feature.index, columns=feature.index)
-    # result.to_csv(f'{root_path}/analysis/pcc-{project}-{scale}.csv')
+    result.to_csv(f'{root_path}/analysis/pcc-{project}.csv') if to_file else None
 
     # 取出最相关的特征
     pcc_category = result[CATEGORY]
@@ -56,21 +54,43 @@ def feature_correlation(project, feature_name):
     return result_pcc, top_features
 
 
+def nominal_feature_correlation(project, feature_name, to_file=False):
+    """
+    RQ3
+    Pearson correlation coefficient 卡方检验
+    Analyzing the correlation between numerical features and warning category
+    Chi-Squared Test
+    :return:
+    """
+    total_path = f'{data_path}/{project}/features/totalFeatures1.csv'
+    df = pd.read_csv(total_path)
+    # Remove category in list of feature name
+    f_names = feature_name.copy()
+    f_names.remove(CATEGORY)
+    print(f_names)
+    for f_name in f_names:
+        # Generate cross table
+        observed_table = pd.crosstab(index=df[f_name], columns=df[CATEGORY])
+        chi2_statistic, p_value, d, _ = stats.chi2_contingency(observed=observed_table)
+        print(nominal_feature_map[f_name], chi2_statistic, p_value, d)
+
+
 def run():
     # 使用字典创建,字典的健是列名
     pcc_dict = dict()
     for project in PROJECT:
-        pcc_list, top_feature = feature_correlation(project, golden_feature_names)
+        pcc_list, top_feature = numerical_feature_correlation(project, golden_feature_names)
         pcc_dict[project] = pcc_list
 
     df = pd.DataFrame(pcc_dict)
-    # 转置后的数据帧
     df = pd.DataFrame(df.values.T, index=df.columns, columns=list(feature_map.values()))
     df.to_csv(f'{root_path}/analysis/pcc-all.csv')
     pass
 
 
 if __name__ == '__main__':
-    run()
-    print(list(feature_map.values()))
+    # run()
+    for project in PROJECT:
+        nominal_feature_correlation(project, golden_nominal_feature_names)
+        break
     pass

@@ -8,24 +8,15 @@ data_path = f'{root_path}/data'
 PROJECT = ['ant', 'cass', 'commons', 'derby', 'jmeter', 'lucence', 'mvn', 'phoenix', 'tomcat']
 
 # F71, F3, F15, F20, F21
-golden_feature_names = ['F25', 'F72',  # 'F71',
-                        'F104', 'F105', 'F101', 'F65', 'F68',
-                        'F126', 'F41',
-                        # 'F3', 'F15',
-                        'F22', 'F94',  # 'F20', 'F21',
-                        'F77',
-                        'F110', 'F116', 'F115', 'F117', 'F120', 'F123',
-                        'category']
+golden_feature_names = ['F25', 'F72', 'F104', 'F105', 'F101', 'F65', 'F68', 'F126', 'F41', 'F22', 'F94', 'F77', 'F110',
+                        'F116', 'F115', 'F117', 'F120', 'F123', 'category']
 
-feature_map = {'F25': 'ND', 'F72': 'FCR',  # 'F71': 'SD',
-               'F104': 'RCC', 'F105': 'DWM', 'F101': 'DWF', 'F65': 'NM', 'F68': 'NC',
-               'F126': 'LAR', 'F41': 'LAM',
-               # 'F3': 'PS', 'F15': 'MV',
-               'F22': 'WR', 'F94': 'NWP',  # 'F20': 'WP', 'F21': 'WT',
-               'F77': 'NR',
-               'F110': 'DWT', 'F116': 'DM',
-               'F115': 'DF', 'F117': 'DLP', 'F120': 'DDL', 'F123': 'ALT',
-               'category': 'category'}
+feature_map = {'F25': 'ND', 'F72': 'FCR', 'F104': 'RCC', 'F105': 'DWM', 'F101': 'DWF', 'F65': 'NM', 'F68': 'NC',
+               'F126': 'LAR', 'F41': 'LAM', 'F22': 'WR', 'F94': 'NWP', 'F77': 'NR', 'F110': 'DWT', 'F116': 'DM',
+               'F115': 'DF', 'F117': 'DLP', 'F120': 'DDL', 'F123': 'ALT', 'category': 'category'}
+
+golden_nominal_feature_names = ['F20', 'F21', 'category']
+nominal_feature_map = {'F71': 'SD', 'F3': 'PS', 'F15': 'MV', 'F20': 'WP', 'F21': 'WT', 'category': 'category'}
 
 
 def make_path(path):

@@ -38,8 +38,8 @@ def open_file(train_project, test_project, release=4):
 
 
 def get_common_feature_names(header_list):
-    train_golden = set([feature for feature in header_list[0] if feature.startswith(tuple(golden_feature_names))])
-    test_golden = set([feature for feature in header_list[1] if feature.startswith(tuple(golden_feature_names))])
+    train_golden = set([feature for feature in header_list[0] if feature.startswith(tuple(golden_numerical_feature_names))])
+    test_golden = set([feature for feature in header_list[1] if feature.startswith(tuple(golden_numerical_feature_names))])
 
     common_features = train_golden.intersection(test_golden)
     return common_features

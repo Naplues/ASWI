@@ -27,7 +27,7 @@ def numerical_feature_correlation(project, feature_name, to_file=False):
     Pearson correlation coefficient (PCC)
     :return:
     """
-    total_path = f'{data_path}/{project}/features/totalFeatures1.csv'
+    total_path = f'{data_path}/{project}/golden/goldenFeatures1.csv'
     df = pd.read_csv(total_path)
     # Remove category in list of feature name
     f_name = feature_name.copy()
@@ -54,7 +54,20 @@ def numerical_feature_correlation(project, feature_name, to_file=False):
     return result_pcc, top_features
 
 
-def nominal_feature_correlation(project, feature_name, to_file=False):
+def run_numerical():
+    # 使用字典创建,字典的健是列名
+    pcc_dict = dict()
+    for project in PROJECT:
+        pcc_list, top_feature = numerical_feature_correlation(project, numerical_feature_names)
+        pcc_dict[project] = pcc_list
+
+    df = pd.DataFrame(pcc_dict)
+    df = pd.DataFrame(df.values.T, index=df.columns, columns=list(numerical_feature_names))
+    df.to_csv(f'{root_path}/analysis/pcc-all.csv')
+    pass
+
+
+def nominal_feature_correlation(project, feature_name):
     """
     RQ3
     Pearson correlation coefficient 卡方检验
@@ -62,35 +75,49 @@ def nominal_feature_correlation(project, feature_name, to_file=False):
     Chi-Squared Test
     :return:
     """
-    total_path = f'{data_path}/{project}/features/totalFeatures1.csv'
+    total_path = f'{data_path}/{project}/golden/goldenFeatures1.csv'
     df = pd.read_csv(total_path)
     # Remove category in list of feature name
     f_names = feature_name.copy()
     f_names.remove(CATEGORY)
-    print(f_names)
+    print(project)
+    print('Nominal features: ', f_names)
+    chi2_list, p_list, d_list = [], [], []
     for f_name in f_names:
         # Generate cross table
         observed_table = pd.crosstab(index=df[f_name], columns=df[CATEGORY])
         chi2_statistic, p_value, d, _ = stats.chi2_contingency(observed=observed_table)
-        print(nominal_feature_map[f_name], chi2_statistic, p_value, d)
+        chi2_list.append(chi2_statistic)
+        p_list.append(p_value)
+        d_list.append(d)
+        print(f'{f_name},{chi2_statistic},{p_value},{d}')
+    return chi2_list, p_list, d_list
 
 
-def run():
-    # 使用字典创建,字典的健是列名
-    pcc_dict = dict()
+def run_nominal():
+    chi2_dict, p_dict, d_dict = dict(), dict(), dict()
     for project in PROJECT:
-        pcc_list, top_feature = numerical_feature_correlation(project, golden_feature_names)
-        pcc_dict[project] = pcc_list
+        chi2_list, p_list, d_list = nominal_feature_correlation(project, nominal_feature_names)
+        chi2_dict[project] = chi2_list
+        p_dict[project] = p_list
+        d_dict[project] = d_list
 
-    df = pd.DataFrame(pcc_dict)
-    df = pd.DataFrame(df.values.T, index=df.columns, columns=list(feature_map.values()))
-    df.to_csv(f'{root_path}/analysis/pcc-all.csv')
-    pass
+    feature_name = nominal_feature_names.copy()
+    feature_name.remove(CATEGORY)
+    df = pd.DataFrame(chi2_dict)
+    df = pd.DataFrame(df.values.T, index=df.columns, columns=feature_name)
+    df.to_csv(f'{root_path}/analysis/nominal_chi2-all.csv')
+
+    df = pd.DataFrame(p_dict)
+    df = pd.DataFrame(df.values.T, index=df.columns, columns=feature_name)
+    df.to_csv(f'{root_path}/analysis/nominal_p-all.csv')
+
+    df = pd.DataFrame(d_dict)
+    df = pd.DataFrame(df.values.T, index=df.columns, columns=feature_name)
+    df.to_csv(f'{root_path}/analysis/nominal_df-all.csv')
 
 
 if __name__ == '__main__':
-    # run()
-    for project in PROJECT:
-        nominal_feature_correlation(project, golden_nominal_feature_names)
-        break
+    # run_numerical()
+    run_nominal()
     pass

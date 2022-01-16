@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from helper import *
 import pandas as pd
+import numpy as np
 
 """
 (3) File history
@@ -75,17 +76,39 @@ def export_golden_dataset(to_file=False):
             golden_path = f'{data_path}/{project}/golden/goldenFeatures{x}.csv'
             df = pd.read_csv(total_path)
 
-            golden_features = []
+            # Add Numerical features
+            new_df = df[golden_numerical_feature_names]
+
+            # Add Nominal features - 'F71', 'F3', 'F15', 'F20', 'F21'
+            nominal_feature_dict = {'F71': set(), 'F3': set(), 'F15': set()}
             for feature in df.columns:
-                if feature in golden_feature_names:
-                    golden_features.append(feature)
-                elif '-' in feature and feature.split('-')[0] in golden_feature_names:
-                    golden_features.append(feature)
+                if '-' in feature:
+                    ss = feature.split('-')
+                    nominal_feature_dict[ss[0]].add(feature) if ss[0] in nominal_feature_dict else None
 
-            df = df[golden_features]
+            for nominal in nominal_feature_dict.keys():
+                # 处理每个特征
+                nominal_values = [''] * len(df)
+                for feature_value in nominal_feature_dict[nominal]:
+                    # 处理特征的每个值
+                    exists = list(df[feature_value])
+                    indices = [index for index in range(len(exists)) if exists[index] == 1]
+                    for i in indices:
+                        nominal_values[i] = feature_value
+                # 将每个特征添加到数据帧中
+                new_df.insert(len(new_df.columns) - 1, nominal, nominal_values)
 
-            df.to_csv(golden_path, index=False) if to_file else None
-            print(f'{project}-{x}: {len(df.columns)}')
+            # 'F20', 'F21'
+            new_df.insert(len(new_df.columns) - 1, 'F20', df['F20'])
+            new_df.insert(len(new_df.columns) - 1, 'F21', df['F21'])
+
+            # 设置特征名
+            print(new_df)
+            new_df.columns = new_name
+            print(new_df)
+            # Output to file
+            new_df.to_csv(golden_path, index=False) if to_file else None
+            print(f'{project}-{x}: {len(new_df.columns)}')
 
 
 def main():
@@ -97,3 +120,4 @@ def main():
 
 if __name__ == '__main__':
     main()
+    pass

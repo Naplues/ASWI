@@ -31,8 +31,8 @@ def measure_consecutive_data():
 
 def measure_consecutive_feature():
     print(f'Project, v1 & v2 => O12, Ratio, v2 & v3 => O23, Ratio, v3 & v4 => O34, Ratio, v4 & v5 => O45, Ratio')
-    for feature in golden_feature_names:
-        print(f'========== {feature_map[feature]} ==========')
+    for feature in golden_numerical_feature_names:
+        print(f'========== {numerical_feature_map[feature]} ==========')
         for project in PROJECT:
             print(f'{project}', end='\t')
             for x in range(1, 5):

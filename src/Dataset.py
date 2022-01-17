@@ -1,8 +1,8 @@
 # -*- coding: utf-8 -*-
 from helper import *
 import pandas as pd
-import numpy as np
 
+__author__ = 'Naples'
 """
 (3) File history
 F25  -> 15 : ND  : Int // file age, number of days the file has existed
@@ -46,7 +46,7 @@ F123 -> 116 : ALT : Float // average lifetime for warning type, average value fo
 
 def data_summary():
     """
-    数据集统计信息
+    Summary of dataset.
     :return:
     """
     for project in PROJECT:
@@ -69,6 +69,9 @@ def data_summary():
 
 
 def export_golden_dataset(to_file=False):
+    """
+    1. Export 23 golden feature set from total 116 features.
+    """
     for project in PROJECT:
         make_path(f'{data_path}/{project}/golden/')
         for x in range(1, 6):
@@ -87,22 +90,22 @@ def export_golden_dataset(to_file=False):
                     nominal_feature_dict[ss[0]].add(feature) if ss[0] in nominal_feature_dict else None
 
             for nominal in nominal_feature_dict.keys():
-                # 处理每个特征
+                # Process each feature
                 nominal_values = [''] * len(df)
                 for feature_value in nominal_feature_dict[nominal]:
-                    # 处理特征的每个值
+                    # Process each feature value
                     exists = list(df[feature_value])
                     indices = [index for index in range(len(exists)) if exists[index] == 1]
                     for i in indices:
                         nominal_values[i] = feature_value
-                # 将每个特征添加到数据帧中
+                # Add each feature into dataframe
                 new_df.insert(len(new_df.columns) - 1, nominal, nominal_values)
 
             # 'F20', 'F21'
             new_df.insert(len(new_df.columns) - 1, 'F20', df['F20'])
             new_df.insert(len(new_df.columns) - 1, 'F21', df['F21'])
 
-            # 设置特征名
+            # Rename feature names
             print(new_df)
             new_df.columns = new_name
             print(new_df)
@@ -111,10 +114,45 @@ def export_golden_dataset(to_file=False):
             print(f'{project}-{x}: {len(new_df.columns)}')
 
 
+def check_consistency():
+    """
+    2. Check the consistency between the number of warnings and feature instances.
+    """
+    for project in PROJECT:
+        for x in range(1, 6):  # Iterator 1, 2, 3, 4, 6
+            list_warnings = read_data_from_file(f'{data_path}/{project}/warnings/warningInfo{x}.csv')
+            list_instances = read_data_from_file(f'{data_path}/{project}/golden/goldenFeatures{x}.csv')
+            len_warnings, len_instances = len(list_warnings), len(list_instances) - 1
+            # ######### Detect consistency
+            w_index, i_index = 0, 1  # warning(instance) index start from 0(1)
+            redundant_warning_index = []  # need to be record and removed from warning_d
+            for i in range(len_warnings):
+                cur_warning = list_warnings[w_index].split(',')[0] + list_warnings[w_index].split(',')[1]
+                cur_instance = list_instances[i_index].split(',')[-2] + list_instances[i_index].split(',')[-3]
+                if cur_warning == cur_instance:
+                    i_index += 1
+                else:
+                    redundant_warning_index.append(w_index)
+                w_index += 1
+
+            print(f'{project}-{x} warning: {len_warnings}, feature: {len_instances} '
+                  f'Redundant: {len_warnings - len_instances} == {len(redundant_warning_index)}')
+
+            # ######### Correct inconsistency
+            warning_text = ''
+            for index in range(len_warnings):
+                if index in redundant_warning_index:
+                    continue
+                warning_text += list_warnings[index]
+            save_csv_result(f'{data_path}/{project}/warnings/', f'warningInfo{x}.csv', warning_text)
+    pass
+
+
 def main():
     # data_summary()
-    # 导出Golden Feature Set 数据集
-    export_golden_dataset(to_file=True)
+    # First, export golden dataset. Second, check consistency
+    # export_golden_dataset(to_file=True)
+    # check_consistency()
     pass
 
 

@@ -90,7 +90,10 @@ def nominal_feature_correlation(project, feature_name):
         chi2_list.append(chi2_statistic)
         p_list.append(p_value)
         d_list.append(d)
-        print(f'{f_name},{chi2_statistic},{p_value},{d}')
+
+        observed_table['ratio'] = observed_table['close'] / observed_table['open']
+        print(observed_table, '\n\n')
+
     return chi2_list, p_list, d_list
 
 

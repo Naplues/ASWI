@@ -7,6 +7,7 @@ data_path = f'{root_path}/data'
 # Total 9 projects
 PROJECT = ['ant', 'cass', 'commons', 'derby', 'jmeter', 'lucence', 'mvn', 'phoenix', 'tomcat']
 
+CATEGORY = 'category'
 # ============================= 数值型特征
 # 原始名称
 golden_numerical_feature_names = ['F25', 'F72', 'F104', 'F105', 'F101', 'F65', 'F68', 'F126', 'F41', 'F22', 'F94',

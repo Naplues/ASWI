@@ -3,13 +3,17 @@ from helper import *
 import pandas as pd
 
 
-# 相邻版本的数据是十分相似的 如果数据本身相似，是否有必要进行预测
 def get_warning_set(path):
+    """
+    Get warning set of specific release.
+    """
     warning_set = set()
     warning_list = list()
     data = read_data_from_file(path)
     for line in data:
+        # Category, Pattern, File, Method, Lines, Code
         ss = line.split(',', maxsplit=5)
+        # Remove Lines from warning information.
         warning_set.add(line.replace(ss[4], ''))
         warning_list.append(line.replace(ss[4], ''))
     return warning_set, warning_list
@@ -19,9 +23,10 @@ def measure_consecutive_data():
     print(f'Project, v1 & v2 => O12, Ratio, v2 & v3 => O23, Ratio, v3 & v4 => O34, Ratio, v4 & v5 => O45, Ratio')
     for project in PROJECT:
         print(f'{project}', end=', ')
-        for x in range(1, 5):
+        for x in range(1, 5):  # Iterator 1, 2, 3, 4
             w_set_1, _ = get_warning_set(f'{data_path}/{project}/warnings/warningInfo{x}.csv')
             w_set_2, _ = get_warning_set(f'{data_path}/{project}/warnings/warningInfo{x + 1}.csv')
+            # Obtain the intersection of previous and next release.
             intersection = w_set_1.intersection(w_set_2)
             ratio = round(len(intersection) / len(w_set_2), 4)
             print(f'{len(w_set_1)} & {len(w_set_2)} => {len(intersection)}, {ratio}', end=', ')
@@ -69,7 +74,7 @@ def measure_consecutive_feature():
 
 
 def main():
-    measure_consecutive_data()
+    # measure_consecutive_data()
     # measure_consecutive_feature()
     pass
 

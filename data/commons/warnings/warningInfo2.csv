@@ -442,8 +442,6 @@ CORRECTNESS,RV_EXCEPTION_NOT_THROWN,org/apache/commons/lang3/concurrent/Concurre
 CORRECTNESS,RV_EXCEPTION_NOT_THROWN,org/apache/commons/lang3/concurrent/ConcurrentUtilsTest.java,testConcurrentRuntimeExceptionCauseError,78-78,[        new ConcurrentRuntimeException("An error", new Error());],,
 CORRECTNESS,RV_EXCEPTION_NOT_THROWN,org/apache/commons/lang3/concurrent/ConcurrentUtilsTest.java,testConcurrentRuntimeExceptionCauseNull,86-86,[        new ConcurrentRuntimeException(null);],,
 CORRECTNESS,RV_EXCEPTION_NOT_THROWN,org/apache/commons/lang3/concurrent/ConcurrentUtilsTest.java,testConcurrentRuntimeExceptionCauseUnchecked,70-70,[        new ConcurrentRuntimeException(new RuntimeException());],,
-PERFORMANCE,BX_UNBOXING_IMMEDIATELY_REBOXED,org/apache/commons/lang3/concurrent/ConstantInitializerTest.java,testEqualsTrue,84-84,[                Integer.valueOf(VALUE.intValue()));],,
-STYLE,RV_CHECK_FOR_POSITIVE_INDEXOF,org/apache/commons/lang3/concurrent/ConstantInitializerTest.java,testToStringNull,131-131,[        assertTrue("Object not found: " + s, s.indexOf("object = null") > 0);],,
 MT_CORRECTNESS,VO_VOLATILE_INCREMENT,org/apache/commons/lang3/concurrent/MultiBackgroundInitializerTest.java,initialize,372-372,[            initializeCalls++;],,
 CORRECTNESS,UWF_UNWRITTEN_FIELD,org/apache/commons/lang3/concurrent/TimedSemaphoreTest.java,,429-429,[            return schedFuture != null ? schedFuture : super.startTimer();],,
 PERFORMANCE,SIC_INNER_SHOULD_BE_STATIC_ANON,org/apache/commons/lang3/event/EventListenerSupportTest.java,,126-130,[        listenerSupport.addListener(new VetoableChangeListener() {,             ,             @Override,             public void vetoableChange(PropertyChangeEvent e) {,             }],,

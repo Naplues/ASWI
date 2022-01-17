@@ -4,27 +4,6 @@ import numpy as np
 from sklearn.metrics import *
 from src.helper import *
 
-# F15, F71, F3 多变量型特征
-# F20, F21 字符型特征, 需要转换为数值进行分析
-CATEGORY = 'category'
-golden_feature_names = ['F25', 'F72',  # 'F71',
-                        'F104', 'F105', 'F101', 'F65', 'F68',
-                        'F126', 'F41',
-                        # 'F3', 'F15',
-                        'F22', 'F94',  # 'F20', 'F21',
-                        'F77',
-                        'F110', 'F116',
-                        'F115', 'F117', 'F120', 'F123']
-
-golden_feature_with_label_names = ['F25', 'F72', 'F71',
-                                   'F104', 'F105', 'F101', 'F65', 'F68',
-                                   'F126', 'F41',
-                                   'F3', 'F15',
-                                   'F20', 'F21', 'F22', 'F94',
-                                   'F77',
-                                   'F110', 'F116',
-                                   'F115', 'F117', 'F120', 'F123', 'category']
-
 
 def binary_to_value(binary):
     label = []
@@ -36,15 +15,12 @@ def binary_to_value(binary):
     return pd.Series(label)
 
 
-def unsupervised(project, feature_name):
+def unsupervised(project, feature_name, release=4):
     """
     构建简单的无监督模型进行识别
-    Pearson correlation coefficient 皮尔逊相关系数
-    :param project:
-    :param feature_name:
     :return:
     """
-    total_path = f'{data_path}/{project}/features/totalFeatures4.csv'
+    total_path = f'{data_path}/{project}/golden/goldenFeatures{release}.csv'
     df = pd.read_csv(total_path)
     # 按照某组特征排序
     feature = [0] * len(df)
@@ -70,13 +46,31 @@ def unsupervised(project, feature_name):
 
 
 def run():
-    for project in PROJECT:
-        # ['F115', 'F116', 'F117', 'F110']
-        unsupervised(project, ['F116', 'F115', 'F117', 'F110'])
-        # break
+    releases = [2, 3, 4, 5]
+    feature = ['DLP', 'DM', 'DF', 'DWT']
+    print(feature)
+    for release in releases:
+        for project in PROJECT:
+            unsupervised(project, feature, release)
+            # break
+        print()
+    pass
+
+
+def run2():
+    releases = [2, 3, 4, 5]
+    features = [['DLP'], ['DM'], ['DF'], ['DWT']]
+    for feature in features:
+        print(feature)
+        for release in releases:
+            for project in PROJECT:
+                unsupervised(project, feature, release)
+                # break
+            print()
     pass
 
 
 if __name__ == '__main__':
-    run()
+    # run()
+    run2()
     pass

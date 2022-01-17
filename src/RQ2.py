@@ -25,7 +25,7 @@ CLASSIFIERS = [
     svm.SVC(kernel="linear", probability=True)]
 
 
-def open_file(train_project, test_project, release=4):
+def open_file(train_project, test_project, release=1):
     trainFile = rf"{data_path}/{train_project}/features/totalFeatures{release}.csv"
     testFile = rf"{data_path}/{test_project}/features/totalFeatures{release + 1}.csv"
 

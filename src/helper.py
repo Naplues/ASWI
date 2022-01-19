@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 import os
+import pandas as pd
 
 root_path = rf'C:/Users/gzq-712/Desktop/Git/SAWI'
 data_path = f'{root_path}/data'
@@ -30,8 +31,9 @@ nominal_feature_names = ['SD', 'PS', 'MV', 'WP', 'WT', 'category']
 nominal_feature_map = {'F71': 'SD', 'F3': 'PS', 'F15': 'MV', 'F20': 'WP', 'F21': 'WT', 'category': 'category'}
 
 # new name for each feature
-new_name = ['ND', 'FCR', 'RCC', 'DWM', 'DWF', 'NM', 'NC', 'LAR', 'LAM', 'WR', 'NWP', 'NR', 'DWT', 'DM', 'DF', 'DLP',
-            'DDL', 'ALT', 'SD', 'PS', 'MV', 'WP', 'WT', 'category']
+all_feature_names = ['ND', 'FCR', 'RCC', 'DWM', 'DWF', 'NM', 'NC', 'LAR', 'LAM', 'WR', 'NWP', 'NR', 'DWT', 'DM', 'DF',
+                     'DLP',
+                     'DDL', 'ALT', 'SD', 'PS', 'MV', 'WP', 'WT', 'category']
 
 
 def make_path(path):
@@ -50,3 +52,22 @@ def save_csv_result(file_path, file_name, data):
     with open(f'{file_path}{file_name}', 'w', encoding='utf-8') as file:
         file.write(data)
     print(f'Result has been saved to {file_path}{file_name} successfully!')
+
+
+def get_warning_set(warning_path, label_path):
+    """
+    Get warning set of specific release.
+    """
+    warning_set = set()
+    warning_list = list()
+    labels = list(pd.read_csv(label_path)[CATEGORY])
+    data = read_data_from_file(warning_path)
+    for index in range(len(data)):
+        line = data[index]
+        # Category, Pattern, File, Method, Lines, Code
+        ss = line.split(',', maxsplit=5)
+        # Remove Lines from warning information.
+        identifier = line.replace(ss[4], '') + labels[index]
+        warning_set.add(identifier)
+        warning_list.append(identifier)
+    return warning_set, warning_list

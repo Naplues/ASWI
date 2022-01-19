@@ -107,7 +107,7 @@ def export_golden_dataset(to_file=False):
 
             # Rename feature names
             print(new_df)
-            new_df.columns = new_name
+            new_df.columns = all_feature_names
             print(new_df)
             # Output to file
             new_df.to_csv(golden_path, index=False) if to_file else None
@@ -150,8 +150,9 @@ def check_consistency():
 
 def main():
     # data_summary()
-    # First, export golden dataset. Second, check consistency
+    # export golden dataset.
     # export_golden_dataset(to_file=True)
+    # check consistency
     # check_consistency()
     pass
 

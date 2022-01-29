@@ -2,7 +2,7 @@
 import os
 import pandas as pd
 
-root_path = rf'C:/Users/gzq-712/Desktop/Git/SAWI'
+root_path = rf'C:/Users/gzq10/Desktop/Git/SAWI'
 data_path = f'{root_path}/data'
 
 # Total 9 projects

@@ -1,0 +1,6 @@
+"name","data_p","data_r","data_f"
+"LR",4,4,4
+"RF",1,4,4
+"DT",4,4,4
+"Boost",3,4,4
+"SVM",4,4,4

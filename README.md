@@ -17,5 +17,3 @@ This repository stores the **source codes** of the four categories of state-of-t
 
 ## 2. Contact us
 Mail: gzq@smail.nju.edu.cn
-
-add test line.
